@@ -1,0 +1,71 @@
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100wh;
+    flex-direction: column;
+}
+
+#gameboard {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 20px auto;
+    position: relative;
+    width: 500px;
+    height: 500px;
+}
+
+.square {
+    width: 6.66%;
+    height: 6.66%;
+    background-color: white;
+    border: solid 1px #e5e5e569;
+    border-collapse: collapse;
+    box-sizing: border-box;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.safe {
+    background-color: #99999938;
+    -webkit-clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+}
+
+.player {
+    height: 30px;
+    width: 30px;
+    border-radius: 50%;
+    border: solid 2px transparent;
+    box-sizing: border-box;
+}
+
+.red {
+    background-color: #D21312;
+}
+
+.green {
+    background-color: #98D8AA;
+}
+
+.blue {
+    background-color: #19A7CE;
+}
+
+.yellow {
+    background-color: #FDD36A;
+}
+
+p {
+    font-size: 1rem;
+    color: #2A2F4F;
+    font-family: 'Indie Flower', cursive;
+}
+
+img {
+    width: 40%;
+}
