@@ -10,7 +10,14 @@ const redPath = [91, 92, 93, 94, 95, 81, 66, 51, 36, 21, 6, 7, 8, 23, 38, 53, 68
 const greenPath = [23, 38, 53, 68, 83, 99, 100, 101, 102, 103, 104, 119, 134, 133, 132, 131, 130, 129, 143, 158, 173, 188, 203, 218, 217, 216, 201, 186, 171, 156, 141, 125, 124, 123, 122, 121, 120, 105, 90, 91, 92, 93, 94, 95, 81, 66, 51, 36, 21, 6, 7, 22, 37, 52, 67, 82, 97];
 const yellowPath = [133, 132, 131, 130, 129, 143, 158, 173, 188, 203, 218, 217, 216, 216, 201, 186, 171, 156, 141, 125, 124, 123, 122, 121, 120, 105, 90, 91, 92, 93, 94, 95, 81, 66, 51, 36, 21, 6, 7, 8, 23, 38, 53, 68, 83, 99, 100, 101, 102, 103, 104, 119, 118, 117, 116, 115, 114, 113];
 const bluePath = [216, 201, 186, 171, 156, 141, 125, 124, 123, 122, 121, 120, 105, 90, 91, 92, 93, 94, 95, 81, 66, 51, 36, 21, 6, 7, 8, 23, 38, 53, 68, 83, 99, 100, 101, 102, 103, 104, 119, 134, 133, 132, 131, 130, 129, 143, 158, 173, 188, 203, 218, 217, 202, 187, 172, 157, 142, 127];
-
+redi = [-1, -1, -1, -1];
+greeni = -1;
+yellowi = -1;
+bluei = -1;
+secondRoundTrigger = false;
+var temp2;
+var temp= '';
+var tempId = 0;
 
 
 function createBoard() {
@@ -47,6 +54,7 @@ function addPlayer(cellIds, color) {
 }
 
 function removePlayer(cellIds) {
+    console.log(cellIds)
     cellIds.forEach(id => {
         // const player = document.createElement("div");
         // player.classList.add(color + "player");
@@ -65,44 +73,121 @@ function removePlayer(cellIds) {
     });
 }
 
-function move(currentDice) {
+function move(currentDice, randomNumber) {
     if (currentDice.className == "redDice") {
+        var currentplayer = null; // or undefined
         for (var i = 0; i < document.querySelectorAll(".redplayer").length; i++) {
-            var currentplayer = document.querySelectorAll(".redplayer")[i];
-            currentplayer.addEventListener("click", function () {
-                addPlayer([redPath[0]], "red");
-                removePlayer([currentplayer.id.substring(3)]);
+            temp = i;
+            tempId = document.querySelectorAll(".redplayer")[temp].id
+            if (redi[i] === -1){
+                console.log(redi[i]);
+                currentplayer = document.querySelectorAll(".redplayer")[temp];
+                redi[i] += 1;
+                currentplayer.addEventListener("click", function () {
+                    
+                    console.log(redi)
+                    //console.log(redPath[redi])
+                    addPlayer([redPath[redi[temp]]], "red");
+                    removePlayer([currentplayer.id.substring(3)]);
+                    
             });
+            console.log('ready go')
+            }
+            
+            else if (redi[i] >= 0){
+                console.log('click')
+                currentplayer = document.querySelectorAll(".redplayer")[temp];
+                currentplayer.addEventListener("click", function () {
+                    redi[temp] += randomNumber;
+                    console.log(redi[temp])
+                    console.log(redPath[redi[temp]])
+                    addPlayer([redPath[redi[temp]]], "red");
+                    removePlayer([currentplayer.id.substring(3)]);
+                });
+                
+            }
         }
+        
+        
     }
     if (currentDice.className == "greenDice") {
+        console.log('be heargreen')
         for (var i = 0; i < document.querySelectorAll(".greenplayer").length; i++) {
-            var currentplayer = document.querySelectorAll(".greenplayer")[i];
-            currentplayer.addEventListener("click", function () {
-                addPlayer([greenPath[0]], "green");
-                removePlayer([currentplayer.id.substring(5)]);
+            if (greeni === -1){
+                greeni += 1;
+                var currentplayer = document.querySelectorAll(".greenplayer")[i];
+                currentplayer.addEventListener("click", function () {
+                    console.log(greeni)
+                    console.log(greenPath[greeni])
+                    addPlayer([greenPath[greeni]], "green");
+                    removePlayer([currentplayer.id.substring(5)]);
+                    temp2 = i-1;
+                    console.log(temp2)
             });
+            }
+            console.log('be hear')
+            if (greeni >=0){
+                console.log('yes')
+                var currentplayer = document.querySelectorAll(".greenplayer")[temp2];
+                currentplayer.addEventListener("click", function () {
+                    console.log(greeni)
+                    console.log(greeni+randomNumber)
+                    console.log(greenPath[greeni+randomNumber])
+                    addPlayer([greenPath[greeni+randomNumber]], "green");
+                    removePlayer([currentplayer.id.substring(5)]);
+                    greeni += randomNumber;
+                    
+                });
+                
+            }
+            
         }
+        
     }
     if (currentDice.className == "blueDice") {
         for (var i = 0; i < document.querySelectorAll(".blueplayer").length; i++) {
-            document.querySelectorAll(".blueplayer")[i].addEventListener("click", function () {
-                alert("I got clicked!");
+            if (bluei === 0){
+                var currentplayer = document.querySelectorAll(".blueplayer")[i];
+                currentplayer.addEventListener("click", function () {
+                addPlayer([bluePath[bluei]], "blue");
+                removePlayer([currentplayer.id.substring(4)]);
             });
+            }
+            else{
+                var currentplayer = document.querySelectorAll(".blueplayer")[i];
+                currentplayer.addEventListener("click", function () {
+                    addPlayer([bluePath[bluei+randomNumber]], "blue");
+                    removePlayer([currentplayer.id.substring(4)]);
+                });
+                bluei += randomNumber;
+            }
         }
     }
     if (currentDice.className == "yellowDice") {
         for (var i = 0; i < document.querySelectorAll(".yellowplayer").length; i++) {
-            document.querySelectorAll(".yellowplayer")[i].addEventListener("click", function () {
-                alert("I got clicked!");
+            if (yellowi === 0){
+                var currentplayer = document.querySelectorAll(".yellowplayer")[i];
+                currentplayer.addEventListener("click", function () {
+                addPlayer([yellowPath[yellowi]], "yellow");
+                removePlayer([currentplayer.id.substring(6)]);
             });
+            }
+            else{
+                var currentplayer = document.querySelectorAll(".yellowplayer")[i];
+                currentplayer.addEventListener("click", function () {
+                    addPlayer([yellowPath[yellowi+randomNumber]], "yellow");
+                    removePlayer([currentplayer.id.substring(6)]);
+                });
+                bluei += randomNumber;
+            }
         }
     }
 
 }
 
 function rollDice(e) {
-    var randomNumber = Math.floor(Math.random() * 6) + 1; //1-6
+    //var randomNumber = Math.floor(Math.random() * 6) + 1; //1-6
+    var randomNumber = 6;
     if (startingDice.value < randomNumber) {
         startingDice.name = e.target.className;
         startingDice.value = randomNumber;
@@ -112,7 +197,12 @@ function rollDice(e) {
     e.target.setAttribute("src", randomImageSource);
     //After first round, check if the current dice is 6
     if (roundNum >= currentStatus.length && randomNumber === 6) {
-        move(e.target);
+        move(e.target, randomNumber);
+        secondRoundTrigger = true;
+        return 0;
+    }
+    if (secondRoundTrigger){
+        move(e.target, randomNumber);
         return 0;
     }
     //check current index to find next player
@@ -127,7 +217,7 @@ function rollDice(e) {
             }, 1000);
             break;
         case "greenDice":
-            console.log(e.target.className)
+            //console.log(e.target.className)
             currentDice[1] = randomNumber;
             setTimeout(function () {
                 e.target.classList.add("hidden");
@@ -151,7 +241,7 @@ function rollDice(e) {
     }
     else {
         currentIndex = 0;
-        console.log("enter");
+        //console.log("enter");
     }
     roundNum += 1;
     //check if it's first round
@@ -163,9 +253,9 @@ function rollDice(e) {
         setTimeout(function () {
             for (let i = currentDice.length - 1; i >= 0; i--) {
                 if (currentDice[i] === 0) {
-                    console.log(currentDice[i])
+                    //console.log(currentDice[i])
                     currentDice.splice(i, 1);
-                    console.log(currentDice);
+                    //console.log(currentDice);
                 }
             }
             for (let i = 0; i < currentDice.length; i++) {
