@@ -54,7 +54,7 @@ function addPlayer(cellIds, color) {
 }
 
 function removePlayer(cellIds) {
-    console.log(cellIds)
+    //console.log(cellIds)
     cellIds.forEach(id => {
         // const player = document.createElement("div");
         // player.classList.add(color + "player");
@@ -80,40 +80,41 @@ function move(currentDice, randomNumber) {
             temp = i;
             tempId = document.querySelectorAll(".redplayer")[temp].id
             if (redi[i] === -1){
-                console.log(redi[i]);
+                //console.log(redi[i]);
                 currentplayer = document.querySelectorAll(".redplayer")[temp];
                 
                 currentplayer.addEventListener("click", function () {
-                    console.log("wrong")
-                    console.log(temp)
-                    redi[temp] += 1;
+                    //console.log(temp)
+                    //console.log('again')
                     console.log(redi)
+                    redi[temp] += 1;
+                    
                     //console.log(redPath[redi])
                     addPlayer([redPath[redi[temp]]], "red");
                     removePlayer([currentplayer.id.substring(3)]);
                     
             });
-            console.log('ready go')
+            //console.log('ready go')
             }
             
             else if (redi[i] >= 0){
-                console.log('click')
+                //console.log('click')
                 var currentplayers = document.querySelectorAll(".redplayer");
-                console.log(redi[temp])
-                console.log(currentplayers)
-                console.log(redPath[redi[temp]])
+                //console.log(redi[temp])
+                //console.log(currentplayers)
+                //console.log(redPath[redi[temp]])
                 for (let i = 0 ; i< currentplayers.length ; i++){
-                    console.log(currentplayers[i].id.substring(3))
+                    //console.log(currentplayers[i].id.substring(3))
                     if (currentplayers[i].id.substring(3) === redPath[redi[temp]].toString()){
-                        console.log(i)
+                        //console.log(i)
                         currentplayer = currentplayers[i]
                     }
                 }
-                console.log(currentplayer)
+                //console.log(currentplayer)
                 currentplayer.addEventListener("click", function () {
                     redi[temp] += randomNumber;
-                    console.log(redi[temp])
-                    console.log(redPath[redi[temp]])
+                    //console.log(redi[temp])
+                    //console.log(redPath[redi[temp]])
                     addPlayer([redPath[redi[temp]]], "red");
                     removePlayer([currentplayer.id.substring(3)]);
                 });
@@ -124,18 +125,18 @@ function move(currentDice, randomNumber) {
         
     }
     if (currentDice.className == "greenDice") {
-        console.log('be heargreen')
+        //console.log('be heargreen')
         for (var i = 0; i < document.querySelectorAll(".greenplayer").length; i++) {
             if (greeni === -1){
                 greeni += 1;
                 var currentplayer = document.querySelectorAll(".greenplayer")[i];
                 currentplayer.addEventListener("click", function () {
-                    console.log(greeni)
-                    console.log(greenPath[greeni])
+                    //console.log(greeni)
+                    //console.log(greenPath[greeni])
                     addPlayer([greenPath[greeni]], "green");
                     removePlayer([currentplayer.id.substring(5)]);
                     temp2 = i-1;
-                    console.log(temp2)
+                    //console.log(temp2)
             });
             }
             console.log('be hear')
@@ -209,15 +210,14 @@ function rollDice(e) {
     var randomImageSource = "images/" + randomDiceImage; //images/dice1.png - images/dice6.png
     e.target.setAttribute("src", randomImageSource);
     //After first round, check if the current dice is 6
-    if (roundNum >= currentStatus.length && randomNumber === 6) {
-        move(e.target, randomNumber);
-        secondRoundTrigger = true;
-        return 0;
-    }
-    if (secondRoundTrigger){
+    if (roundNum >= currentStatus.length) {
         move(e.target, randomNumber);
         return 0;
     }
+    // if (secondRoundTrigger){
+    //     move(e.target, randomNumber);
+    //     return 0;
+    // }
     //check current index to find next player
     const isEqual = (element) => element.name === e.target.className;
     currentIndex = currentStatus.findIndex(isEqual);
