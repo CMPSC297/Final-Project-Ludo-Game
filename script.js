@@ -82,9 +82,11 @@ function move(currentDice, randomNumber) {
             if (redi[i] === -1){
                 console.log(redi[i]);
                 currentplayer = document.querySelectorAll(".redplayer")[temp];
-                redi[i] += 1;
+                
                 currentplayer.addEventListener("click", function () {
-                    
+                    console.log("wrong")
+                    console.log(temp)
+                    redi[temp] += 1;
                     console.log(redi)
                     //console.log(redPath[redi])
                     addPlayer([redPath[redi[temp]]], "red");
@@ -96,7 +98,18 @@ function move(currentDice, randomNumber) {
             
             else if (redi[i] >= 0){
                 console.log('click')
-                currentplayer = document.querySelectorAll(".redplayer")[temp];
+                var currentplayers = document.querySelectorAll(".redplayer");
+                console.log(redi[temp])
+                console.log(currentplayers)
+                console.log(redPath[redi[temp]])
+                for (let i = 0 ; i< currentplayers.length ; i++){
+                    console.log(currentplayers[i].id.substring(3))
+                    if (currentplayers[i].id.substring(3) === redPath[redi[temp]].toString()){
+                        console.log(i)
+                        currentplayer = currentplayers[i]
+                    }
+                }
+                console.log(currentplayer)
                 currentplayer.addEventListener("click", function () {
                     redi[temp] += randomNumber;
                     console.log(redi[temp])
