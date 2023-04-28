@@ -10,17 +10,18 @@ const redPath = [91, 92, 93, 94, 95, 81, 66, 51, 36, 21, 6, 7, 8, 23, 38, 53, 68
 const greenPath = [23, 38, 53, 68, 83, 99, 100, 101, 102, 103, 104, 119, 134, 133, 132, 131, 130, 129, 143, 158, 173, 188, 203, 218, 217, 216, 201, 186, 171, 156, 141, 125, 124, 123, 122, 121, 120, 105, 90, 91, 92, 93, 94, 95, 81, 66, 51, 36, 21, 6, 7, 22, 37, 52, 67, 82, 97];
 const yellowPath = [133, 132, 131, 130, 129, 143, 158, 173, 188, 203, 218, 217, 216, 216, 201, 186, 171, 156, 141, 125, 124, 123, 122, 121, 120, 105, 90, 91, 92, 93, 94, 95, 81, 66, 51, 36, 21, 6, 7, 8, 23, 38, 53, 68, 83, 99, 100, 101, 102, 103, 104, 119, 118, 117, 116, 115, 114, 113];
 const bluePath = [216, 201, 186, 171, 156, 141, 125, 124, 123, 122, 121, 120, 105, 90, 91, 92, 93, 94, 95, 81, 66, 51, 36, 21, 6, 7, 8, 23, 38, 53, 68, 83, 99, 100, 101, 102, 103, 104, 119, 134, 133, 132, 131, 130, 129, 143, 158, 173, 188, 203, 218, 217, 202, 187, 172, 157, 142, 127];
-let redi = [{ id: "red32", index: -1 }, { id: "red33", index: -1 }, { id: "red47", index: -1 }, { id: "red48", index: -1 }];
-let greeni = [{ id: "green41", index: -1 }, { id: "green42", index: -1 }, { id: "green56", index: -1 }, { id: "green57", index: -1 }];
-let yellowi = [{ id: "yellow176", index: -1 }, { id: "yellow177", index: -1 }, { id: "yellow191", index: -1 }, { id: "yellow192", index: -1 }];
-let bluei = [{ id: "blue167", index: -1 }, { id: "blue168", index: -1 }, { id: "blue182", index: -1 }, { id: "blue183", index: -1 }];
-secondRoundTrigger = false;
+var redi = [{ id: "r32", index: -1 }, { id: "r33", index: -1 }, { id: "r47", index: -1 }, { id: "r48", index: -1 }];
+var greeni = [{ id: "g41", index: -1 }, { id: "g42", index: -1 }, { id: "g56", index: -1 }, { id: "g57", index: -1 }];
+var yellowi = [{ id: "y176", index: -1 }, { id: "y77", index: -1 }, { id: "y191", index: -1 }, { id: "y192", index: -1 }];
+var bluei = [{ id: "b67", index: -1 }, { id: "b168", index: -1 }, { id: "b182", index: -1 }, { id: "b183", index: -1 }];
+let secondRoundTrigger = false;
 var temp2;
 var temp = '';
 var tempId = 0;
 var diceNum = 0;
 var redcount6 = 0;
 var greencount6 = 0;
+var blockPath = [];
 
 
 function createBoard() {
@@ -50,28 +51,35 @@ function addPlayer(cellIds, color) {
         const player = document.createElement("div");
         player.classList.add(color + "player");
         // player.classList.add(color);
-        player.id = color + id;
+        player.id = color.substring(0, 1) + id;
         const cellElement = document.getElementById(id);
         cellElement.append(player);
     });
 }
 
 function removePlayer(cellId, playerId) {
-    // console.log(cellId);
-    // console.log(playerId);
+    //get all players on current cell
+    var players = document.getElementById(cellId).querySelectorAll("*");
+    const removePlayer = document.getElementById(playerId);
+    //create newCell after remove player
     const cellElement = document.getElementById(cellId);
     const newCellElement = document.createElement("div");
     newCellElement.classList.add("square");
     newCellElement.id = cellId;
-    //get all players on current cell
-    var players = document.getElementById(cellId).querySelectorAll("*");
-    const removePlayer = document.getElementById(playerId);
+    var remainNum = 0;
     players.forEach(player => {
-        if (player !== removePlayer) {
-            newCellElement.append(player);
+        if (player != removePlayer) {
+            newCellElement.append(player); //keep other players on cell
+            remainNum += 1;
         }
     });
-    console.log(cellElement);
+    //check if current cell doesn't form a block
+    if (remainNum < 2) {
+        var index = blockPath.indexOf(cellId);
+        if (index > -1) {
+            blockPath.splice(index, 1);
+        }
+    }
     cellElement.replaceWith(newCellElement);
     addColor(redCells, "#FCC8D1");
     addColor(greenCells, "#C7E9B0");
@@ -81,7 +89,7 @@ function removePlayer(cellId, playerId) {
     cellElement.remove(removePlayer);
 }
 
-function movePlayer(cellId, playerId, className, prevcellId) {
+function movePlayer(cellId, playerId, className, prevcellId, path) {
     //current cell
     const cellElement = document.getElementById(cellId);
     //new player arrives on the cell
@@ -92,50 +100,116 @@ function movePlayer(cellId, playerId, className, prevcellId) {
     const newCellElement = document.createElement("div");
     newCellElement.classList.add("square");
     newCellElement.id = cellId;
-    //get all players on current cell
+    //count all players of different colors on current cell
     var players = document.getElementById(cellId).querySelectorAll("*");
     var oppsiteCount = [0, 0, 0, 0];
     players.forEach(player => {
-        if (player.className === "redplayer") {
-            oppsiteCount[0] += 1;
-        }
-        if (player.className === "greenplayer") {
-            oppsiteCount[1] += 1;
-        }
-        if (player.className === "yellowplayer") {
-            oppsiteCount[2] += 1;
-        }
-        if (player.className === "blueplayer") {
-            oppsiteCount[3] += 1;
+        if (player.className !== newPlayer.className) {
+            if (player.className === "redplayer") {
+                oppsiteCount[0] += 1;
+            }
+            if (player.className === "greenplayer") {
+                oppsiteCount[1] += 1;
+            }
+            if (player.className === "yellowplayer") {
+                oppsiteCount[2] += 1;
+            }
+            if (player.className === "blueplayer") {
+                oppsiteCount[3] += 1;
+            }
+
         }
     });
+
+    var block = false;
     oppsiteCount.forEach(oldPlayer => {
         //cell element has a block
         if (oldPlayer >= 2) {
-            const prevCellElement = document.createElement("div");
-            prevCellElement.classList.add("square");
-            prevCellElement.id = prevcellId;
-            prevCellElement.append(newPlayer)
+            block = true;
         }
-        else { //if cell is safe
-            if (cellId in [122, 36, 102, 188]) {
+    });
+    //check if there is block along the path
+    for (let i = path.indexOf(cellId) - diceNum; i < path.indexOf(cellId); i++) {// i is assigned newplayer's starting position index
+        if (blockPath.includes(path[i])) {
+            //check if the block player has the same color as newPlayer
+            var playerOnblock = document.getElementById(path[i]).querySelectorAll("*")[0];
+            if (playerOnblock.className !== newPlayer.className) {
+                block = true;
+                prevcellId = path[i - 1];
+                break
+            }
+        }
+    }
+    console.log(blockPath);
+    console.log(prevcellId);
+
+    if (block) {
+        const prevCellElement = document.getElementById(prevcellId);
+        prevCellElement.append(newPlayer);
+
+    }
+    else {
+        //if cell is safe
+        if (["122", "36", "102", "188"].includes(cellId)) {
+            cellElement.append(newPlayer);
+        }
+        else {
+            if (players.length === 0) {
                 cellElement.append(newPlayer);
+            } // same color players to form a block
+            else if (players[0].className === newPlayer.className) {
+                cellElement.append(newPlayer);
+                console.log("add green player");
+                if (blockPath.indexOf(cellId) === -1) blockPath.push(cellId);
+                console.log(blockPath);
             }
             else {
                 newCellElement.append(newPlayer);
                 players.forEach(player => {
-                    var homeCell = document.getElementById(player.id.substring())
+                    var homeCell = document.getElementById(player.id.substring(1));
+                    homeCell.append(player);
+                    var homePosition = player.id.substring(0, 1);
+                    if (homePosition === 'r') {
+                        for (var j = 0; j < redi.length; j++) {
+                            if (redi[j].id === player.id) {
+                                redi[j].index = -1;
+                            }
+                        }
+                    }
+                    if (homePosition === 'g') {
+                        for (var j = 0; j < greeni.length; j++) {
+                            if (greeni[j].id === player.id) {
+                                greeni[j].index = -1;
+                            }
+                        }
+                    }
+                    if (homePosition === 'y') {
+                        for (var j = 0; j < yellowi.length; j++) {
+                            if (yellowi[j].id === player.id) {
+                                yellowi[j].index = -1;
+                            }
+                        }
+                    }
+                    if (homePosition === 'b') {
+                        for (var j = 0; j < bluei.length; j++) {
+                            if (bluei[j].id === player.id) {
+                                bluei[j].index = -1;
+                            }
+                        }
+                    }
                 })
-
+                cellElement.replaceWith(newCellElement);
+                addColor(redCells, "#FCC8D1");
+                addColor(greenCells, "#C7E9B0");
+                addColor(blueCells, "#C0DBEA");
+                addColor(yellowCells, "#FEFF86");
             }
         }
-    });
+    }
 
 }
 
 function redAction(e) {
-    console.log('in the action');
-    console.log(e);
     for (var j = 0; j < redi.length; j++) {
         // console.log('in the loop')
         if (redi[j].id === e.target.id) {
@@ -143,11 +217,10 @@ function redAction(e) {
             if (redi[j].index === -1) {
                 if (diceNum === 6) {
                     redcount6 += 1;
-                    console.log('in the if')
                     redi[j].index += 1; //update player's current position
                     nextposition = redPath[redi[j].index];
-                    removePlayer(e.target.id.substring(3), e.target.id);
-                    movePlayer(nextposition, e.target.id, "redplayer", redPath[redi[j].index - 1]);
+                    removePlayer(e.target.id.substring(1), e.target.id);
+                    movePlayer(nextposition, e.target.id, "redplayer", redPath[redi[j].index - 1], redPath);
                     //disable to click the same player multiple times  
                     document.querySelectorAll(".redplayer").forEach(player => {
                         player.removeEventListener("click", redAction);
@@ -171,9 +244,8 @@ function redAction(e) {
                 removePlayer(redPath[redi[j].index], e.target.id);
                 redi[j].index += diceNum;
                 nextposition = redPath[redi[j].index];
-                movePlayer(nextposition, e.target.id, "redplayer", redPath[redi[j].index - 1]);
+                movePlayer(nextposition, e.target.id, "redplayer", redPath[redi[j].index - 1], redPath);
                 document.querySelectorAll(".redplayer").forEach(player => {
-                    console.log(player);
                     player.removeEventListener("click", redAction);
                 });
             }
@@ -187,24 +259,23 @@ function redAction(e) {
             }
         }
     }
+    const Dice = document.querySelector(".redDice");
+    Dice.addEventListener("click", rollDice);
 }
 
 function greenAction(e) {
-    for (var j = 0; j < redi.length; j++) {
-        // console.log('in the loop')
+    for (var j = 0; j < greeni.length; j++) {
         if (greeni[j].id === e.target.id) {
             //move out of home to start position
             if (greeni[j].index === -1) {
                 if (diceNum === 6) {
                     greencount6 += 1;
-                    console.log('in the if')
                     greeni[j].index += 1;
                     nextposition = greenPath[greeni[j].index];
-                    removePlayer(e.target.id.substring(5), e.target.id);
-                    movePlayer(nextposition, e.target.id, "greenplayer", greenPath[greeni[j].index - 1]);
+                    removePlayer(e.target.id.substring(1), e.target.id);
+                    movePlayer(nextposition, e.target.id, "greenplayer", greenPath[greeni[j].index - 1], greenPath);
                     //disable to click the same player multiple times  
                     document.querySelectorAll(".greenplayer").forEach(player => {
-                        console.log(player);
                         player.removeEventListener("click", greenAction);
                     });
                 } else {
@@ -226,28 +297,51 @@ function greenAction(e) {
                 removePlayer(greenPath[greeni[j].index], e.target.id);
                 greeni[j].index += diceNum;
                 nextposition = greenPath[greeni[j].index];
-                movePlayer(nextposition, e.target.id, "greenplayer", greenPath[greeni[j].index - 1]);
+                movePlayer(nextposition, e.target.id, "greenplayer", greenPath[greeni[j].index - 1], greenPath);
                 document.querySelectorAll(".greenplayer").forEach(player => {
-                    console.log(player);
                     player.removeEventListener("click", greenAction);
                 });
             }
             if (greencount6 >= 3) {
                 //give chance to next player
                 const currDice = document.querySelector(".greenDice")
-                currDice.classList.add("hidden");
                 //to do: resolve index
-                const nextDice = document.querySelector("." + currentStatus[0].name);
+                const nextDice = document.querySelector("." + nextStatus(currDice.className));
+                currDice.classList.add("hidden");
                 nextDice.classList.remove("hidden");
                 greencount6 = 0;
 
             }
         }
     }
+    const Dice = document.querySelector(".greenDice");
+    Dice.addEventListener("click", rollDice);
 }
 
 function move(currentDice, randomNumber) {
-    if (currentDice.className == "redDice") {
+    if (currentDice.className === "redDice") {
+        //check if all players are at home
+        var playerAtHome = 0;
+        redi.forEach(i => {
+            if (i.index === -1) {
+                playerAtHome += 1;
+            }
+        })
+        if (playerAtHome === redi.length && randomNumber !== 6) {
+            let nextDiceName = nextStatus(currentDice.className);
+            //give chance to next player
+            setTimeout(function () {
+                currentDice.classList.add("hidden");
+            }, 1000);
+            var nextDice = document.querySelector("." + nextDiceName);
+            setTimeout(function () {
+                nextDice.classList.remove("hidden");
+            }, 1000);
+            return 0;
+        }
+
+        const Dice = document.querySelector(".redDice");
+        Dice.removeEventListener("click", rollDice);
         const redPlayers = document.querySelectorAll(".redplayer");
         for (var i = 0; i < redPlayers.length; i++) {
             var currentplayer = redPlayers[i];
@@ -255,7 +349,28 @@ function move(currentDice, randomNumber) {
 
         }
     }
-    if (currentDice.className == "greenDice") {
+    if (currentDice.className === "greenDice") {
+        //check if all players are at home
+        var playerAtHome = 0;
+        greeni.forEach(i => {
+            if (i.index == -1) {
+                playerAtHome += 1;
+            }
+        })
+        if (playerAtHome === greeni.length && randomNumber !== 6) {
+            let nextDiceName = nextStatus(currentDice.className);
+            //give chance to next player
+            setTimeout(function () {
+                currentDice.classList.add("hidden");
+            }, 1000);
+            var nextDice = document.querySelector("." + nextDiceName);
+            setTimeout(function () {
+                nextDice.classList.remove("hidden");
+            }, 1000);
+            return 0;
+        }
+        const Dice = document.querySelector(".greenDice");
+        Dice.removeEventListener("click", rollDice);
         const greenPlayers = document.querySelectorAll(".greenplayer");
         for (var i = 0; i < greenPlayers.length; i++) {
             var currentplayer = greenPlayers[i];
@@ -263,50 +378,26 @@ function move(currentDice, randomNumber) {
 
         }
     }
-    if (currentDice.className == "blueDice") {
-        for (var i = 0; i < document.querySelectorAll(".blueplayer").length; i++) {
-            if (bluei === 0) {
-                var currentplayer = document.querySelectorAll(".blueplayer")[i];
-                currentplayer.addEventListener("click", function () {
-                    addPlayer([bluePath[bluei]], "blue");
-                    removePlayer([currentplayer.id.substring(4)]);
-                });
-            }
-            else {
-                var currentplayer = document.querySelectorAll(".blueplayer")[i];
-                currentplayer.addEventListener("click", function () {
-                    addPlayer([bluePath[bluei + randomNumber]], "blue");
-                    removePlayer([currentplayer.id.substring(4)]);
-                });
-                bluei += randomNumber;
-            }
-        }
-    }
-    if (currentDice.className == "yellowDice") {
-        for (var i = 0; i < document.querySelectorAll(".yellowplayer").length; i++) {
-            if (yellowi === 0) {
-                var currentplayer = document.querySelectorAll(".yellowplayer")[i];
-                currentplayer.addEventListener("click", function () {
-                    addPlayer([yellowPath[yellowi]], "yellow");
-                    removePlayer([currentplayer.id.substring(6)]);
-                });
-            }
-            else {
-                var currentplayer = document.querySelectorAll(".yellowplayer")[i];
-                currentplayer.addEventListener("click", function () {
-                    addPlayer([yellowPath[yellowi + randomNumber]], "yellow");
-                    removePlayer([currentplayer.id.substring(6)]);
-                });
-                bluei += randomNumber;
+
+}
+function nextStatus(name) {
+    for (let i = 0; i < currentStatus.length; i++) {
+        if (currentStatus[i].name === name) {
+            try {
+                return currentStatus[i + 1].name;
+            } catch (error) {
+                return currentStatus[0].name;
             }
         }
     }
 
 }
-
+var path = [2, 1, 6, 5, 6, 6, 6, 6, 2];
+var pos = 0;
 function rollDice(e) {
-    //var randomNumber = Math.floor(Math.random() * 6) + 1; //1-6
-    var randomNumber = 6;
+    // var randomNumber = Math.floor(Math.random() * 6) + 1; //1-6
+    var randomNumber = path[pos];
+    pos += 1;
     diceNum = randomNumber;
     if (startingDice.value < randomNumber) {
         startingDice.name = e.target.className;
@@ -316,20 +407,11 @@ function rollDice(e) {
     var randomImageSource = "images/" + randomDiceImage; //images/dice1.png - images/dice6.png
     e.target.setAttribute("src", randomImageSource);
     //After first round, check if the current dice is 6
-    if (roundNum >= currentStatus.length && randomNumber === 6) {
-        secondRoundTrigger = true;
+    if (roundNum >= currentStatus.length) {
         move(e.target, randomNumber);
         return 0;
     }
 
-    if (roundNum >= currentStatus.length && randomNumber !== 6 && secondRoundTrigger) {
-        move(e.target, randomNumber);
-        return 0;
-    }
-    // if (secondRoundTrigger){
-    //     move(e.target, randomNumber);
-    //     return 0;
-    // }
     //check current index to find next player
     const isEqual = (element) => element.name === e.target.className;
     currentIndex = currentStatus.findIndex(isEqual);
