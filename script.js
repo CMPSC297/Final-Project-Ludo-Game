@@ -1,3 +1,5 @@
+var dicesound= document.getElementById("diceSound");
+var stepsound= document.getElementById("stepSound");
 const gameBoard = document.querySelector(".gameboard");
 const welcomePage = document.querySelector(".welcome");
 const startCells = Array(225).join(".").split(".");
@@ -8,19 +10,17 @@ let temp_max = 0;
 let startingDice = { name: "start", value: 0 };
 const redPath = [91, 92, 93, 94, 95, 81, 66, 51, 36, 21, 6, 7, 8, 23, 38, 53, 68, 83, 99, 100, 101, 102, 103, 104, 119, 134, 133, 132, 131, 130, 129, 143, 158, 173, 188, 203, 218, 217, 216, 201, 186, 171, 156, 141, 125, 124, 123, 122, 121, 120, 105, 106, 107, 108, 109, 110, 111];
 const greenPath = [23, 38, 53, 68, 83, 99, 100, 101, 102, 103, 104, 119, 134, 133, 132, 131, 130, 129, 143, 158, 173, 188, 203, 218, 217, 216, 201, 186, 171, 156, 141, 125, 124, 123, 122, 121, 120, 105, 90, 91, 92, 93, 94, 95, 81, 66, 51, 36, 21, 6, 7, 22, 37, 52, 67, 82, 97];
-const yellowPath = [133, 132, 131, 130, 129, 143, 158, 173, 188, 203, 218, 217, 216, 216, 201, 186, 171, 156, 141, 125, 124, 123, 122, 121, 120, 105, 90, 91, 92, 93, 94, 95, 81, 66, 51, 36, 21, 6, 7, 8, 23, 38, 53, 68, 83, 99, 100, 101, 102, 103, 104, 119, 118, 117, 116, 115, 114, 113];
-const bluePath = [216, 201, 186, 171, 156, 141, 125, 124, 123, 122, 121, 120, 105, 90, 91, 92, 93, 94, 95, 81, 66, 51, 36, 21, 6, 7, 8, 23, 38, 53, 68, 83, 99, 100, 101, 102, 103, 104, 119, 134, 133, 132, 131, 130, 129, 143, 158, 173, 188, 203, 218, 217, 202, 187, 172, 157, 142, 127];
+const yellowPath = [133, 132, 131, 130, 129, 143, 158, 173, 188, 203, 218, 217, 216, 201, 186, 171, 156, 141, 125, 124, 123, 122, 121, 120, 105, 90, 91, 92, 93, 94, 95, 81, 66, 51, 36, 21, 6, 7, 8, 23, 38, 53, 68, 83, 99, 100, 101, 102, 103, 104, 119, 118, 117, 116, 115, 114, 113];
+const bluePath = [201, 186, 171, 156, 141, 125, 124, 123, 122, 121, 120, 105, 90, 91, 92, 93, 94, 95, 81, 66, 51, 36, 21, 6, 7, 8, 23, 38, 53, 68, 83, 99, 100, 101, 102, 103, 104, 119, 134, 133, 132, 131, 130, 129, 143, 158, 173, 188, 203, 218, 217, 202, 187, 172, 157, 142, 127];
 var redi = [{ id: "r32", index: -1 }, { id: "r33", index: -1 }, { id: "r47", index: -1 }, { id: "r48", index: -1 }];
 var greeni = [{ id: "g41", index: -1 }, { id: "g42", index: -1 }, { id: "g56", index: -1 }, { id: "g57", index: -1 }];
 var yellowi = [{ id: "y176", index: -1 }, { id: "y77", index: -1 }, { id: "y191", index: -1 }, { id: "y192", index: -1 }];
-var bluei = [{ id: "b67", index: -1 }, { id: "b168", index: -1 }, { id: "b182", index: -1 }, { id: "b183", index: -1 }];
-let secondRoundTrigger = false;
-var temp2;
-var temp = '';
-var tempId = 0;
+var bluei = [{ id: "b167", index: -1 }, { id: "b168", index: -1 }, { id: "b182", index: -1 }, { id: "b183", index: -1 }];
 var diceNum = 0;
 var redcount6 = 0;
 var greencount6 = 0;
+var yellowcount6 = 0;
+var bluecount6 = 0;
 var blockPath = [];
 
 
@@ -90,6 +90,7 @@ function removePlayer(cellId, playerId) {
 }
 
 function movePlayer(cellId, playerId, className, prevcellId, path) {
+    stepsound.play();
     //current cell
     const cellElement = document.getElementById(cellId);
     //new player arrives on the cell
@@ -140,8 +141,8 @@ function movePlayer(cellId, playerId, className, prevcellId, path) {
             }
         }
     }
-    console.log(blockPath);
-    console.log(prevcellId);
+    // console.log(blockPath);
+    // console.log(prevcellId);
 
     if (block) {
         const prevCellElement = document.getElementById(prevcellId);
@@ -159,9 +160,9 @@ function movePlayer(cellId, playerId, className, prevcellId, path) {
             } // same color players to form a block
             else if (players[0].className === newPlayer.className) {
                 cellElement.append(newPlayer);
-                console.log("add green player");
+                // console.log("add green player");
                 if (blockPath.indexOf(cellId) === -1) blockPath.push(cellId);
-                console.log(blockPath);
+                // console.log(blockPath);
             }
             else {
                 newCellElement.append(newPlayer);
@@ -220,7 +221,7 @@ function redAction(e) {
                     redi[j].index += 1; //update player's current position
                     nextposition = redPath[redi[j].index];
                     removePlayer(e.target.id.substring(1), e.target.id);
-                    movePlayer(nextposition, e.target.id, "redplayer", redPath[redi[j].index - 1], redPath);
+                    movePlayer(nextposition, e.target.id, "redplayer", e.target.id.substring(1), redPath);
                     //disable to click the same player multiple times  
                     document.querySelectorAll(".redplayer").forEach(player => {
                         player.removeEventListener("click", redAction);
@@ -235,8 +236,8 @@ function redAction(e) {
                 } else {
                     //give chance to next player
                     const currDice = document.querySelector(".redDice")
+                    const nextDice = document.querySelector("." + nextStatus(currDice.className));
                     currDice.classList.add("hidden");
-                    const nextDice = document.querySelector("." + currentStatus[1].name);
                     nextDice.classList.remove("hidden");
                     redcount6 = 0;
 
@@ -244,6 +245,18 @@ function redAction(e) {
                 removePlayer(redPath[redi[j].index], e.target.id);
                 redi[j].index += diceNum;
                 nextposition = redPath[redi[j].index];
+                if (typeof nextposition === 'undefined'){
+                    console.log('yes error!')
+                    var remainStep = redi[j].index - 56;
+                    console.log(remainStep)
+                    redi[j].index = 56 - remainStep;
+                    nextposition = redPath[redi[j].index];
+                }
+                else if(nextposition === redPath[56]){
+                    alert("This pawn of yours has reached the finish line.");
+                    redi.splice(j, 1)
+                    removePlayer(e.target.id.substring(1), e.target.id);
+                }
                 movePlayer(nextposition, e.target.id, "redplayer", redPath[redi[j].index - 1], redPath);
                 document.querySelectorAll(".redplayer").forEach(player => {
                     player.removeEventListener("click", redAction);
@@ -252,8 +265,8 @@ function redAction(e) {
             if (redcount6 >= 3) {
                 //give chance to next player
                 const currDice = document.querySelector(".redDice")
+                const nextDice = document.querySelector("." + nextStatus(currDice.className));
                 currDice.classList.add("hidden");
-                const nextDice = document.querySelector("." + currentStatus[1].name);
                 nextDice.classList.remove("hidden");
                 redcount6 = 0;
             }
@@ -261,6 +274,10 @@ function redAction(e) {
     }
     const Dice = document.querySelector(".redDice");
     Dice.addEventListener("click", rollDice);
+    if (document.querySelectorAll(".redplayer").length === 0 ){
+        alert ("Yes, you win!")
+
+    }
 }
 
 function greenAction(e) {
@@ -273,7 +290,7 @@ function greenAction(e) {
                     greeni[j].index += 1;
                     nextposition = greenPath[greeni[j].index];
                     removePlayer(e.target.id.substring(1), e.target.id);
-                    movePlayer(nextposition, e.target.id, "greenplayer", greenPath[greeni[j].index - 1], greenPath);
+                    movePlayer(nextposition, e.target.id, "greenplayer", e.target.id.substring(1), greenPath);
                     //disable to click the same player multiple times  
                     document.querySelectorAll(".greenplayer").forEach(player => {
                         player.removeEventListener("click", greenAction);
@@ -288,15 +305,26 @@ function greenAction(e) {
                 } else {
                     //give chance to next player
                     const currDice = document.querySelector(".greenDice")
-                    currDice.classList.add("hidden");
                     //to do: resolve index
-                    const nextDice = document.querySelector("." + currentStatus[0].name);
+                    const nextDice = document.querySelector("." + nextStatus(currDice.className));
+                    currDice.classList.add("hidden");
                     nextDice.classList.remove("hidden");
                     greencount6 = 0;
                 }
                 removePlayer(greenPath[greeni[j].index], e.target.id);
                 greeni[j].index += diceNum;
                 nextposition = greenPath[greeni[j].index];
+                if (typeof nextposition === 'undefined'){
+                    console.log('yes error!')
+                    var remainStep = greeni[j].index - 56;
+                    console.log(remainStep)
+                    greeni[j].index = 56 - remainStep;
+                    nextposition = greenPath[greeni[j].index];
+                }
+                else if(nextposition === greenPath[56]){
+                    alert("This pawn of yours has reached the finish line.");
+                    removePlayer(e.target.id.substring(1), e.target.id);
+                }
                 movePlayer(nextposition, e.target.id, "greenplayer", greenPath[greeni[j].index - 1], greenPath);
                 document.querySelectorAll(".greenplayer").forEach(player => {
                     player.removeEventListener("click", greenAction);
@@ -316,8 +344,154 @@ function greenAction(e) {
     }
     const Dice = document.querySelector(".greenDice");
     Dice.addEventListener("click", rollDice);
+    if (document.querySelectorAll(".greenplayer").length === 0 ){
+        alert ("Yes, you win!")
+
+    }
 }
 
+function yellowAction(e) {
+    for (var j = 0; j < yellowi.length; j++) {
+        if (yellowi[j].id === e.target.id) {
+            //move out of home to start position
+            if (yellowi[j].index === -1) {
+                if (diceNum === 6) {
+                    yellowcount6 += 1;
+                    yellowi[j].index += 1;
+                    nextposition = yellowPath[yellowi[j].index];
+                    removePlayer(e.target.id.substring(1), e.target.id);
+                    movePlayer(nextposition, e.target.id, "yellowplayer", e.target.id.substring(1), yellowPath);
+                    //disable to click the same player multiple times  
+                    document.querySelectorAll(".yellowplayer").forEach(player => {
+                        player.removeEventListener("click", yellowAction);
+                    });
+                } else {
+                    yellowcount6 = 0;
+                }
+            }//not in home
+            else {
+                if (diceNum === 6) {
+                    yellowcount6 += 1;
+                } else {
+                    //give chance to next player
+                    const currDice = document.querySelector(".yellowDice")
+                    //to do: resolve index
+                    const nextDice = document.querySelector("." + nextStatus(currDice.className));
+                    currDice.classList.add("hidden");
+                    nextDice.classList.remove("hidden");
+                    yellowcount6 = 0;
+                }
+                removePlayer(yellowPath[yellowi[j].index], e.target.id);
+                yellowi[j].index += diceNum;
+                nextposition = yellowPath[yellowi[j].index];
+                if (typeof nextposition === 'undefined'){
+                    console.log('yes error!')
+                    var remainStep = yellowi[j].index - 56;
+                    console.log(remainStep)
+                    yellowi[j].index = 56 - remainStep;
+                    console.log(yellowi[j])
+                    nextposition = yellowPath[yellowi[j].index];
+                    console.log(nextposition)
+                }
+                else if(nextposition === yellowPath[56]){
+                    alert("This pawn of yours has reached the finish line.");
+                    removePlayer(e.target.id.substring(1), e.target.id);
+                }
+                movePlayer(nextposition, e.target.id, "yellowplayer", yellowPath[yellowi[j].index - 1], yellowPath);
+                document.querySelectorAll(".yellowplayer").forEach(player => {
+                    player.removeEventListener("click", yellowAction);
+                });
+            }
+            if (yellowcount6 >= 3) {
+                //give chance to next player
+                const currDice = document.querySelector(".yellowDice")
+                //to do: resolve index
+                const nextDice = document.querySelector("." + nextStatus(currDice.className));
+                currDice.classList.add("hidden");
+                nextDice.classList.remove("hidden");
+                yellowcount6 = 0;
+
+            }
+        }
+    }
+    const Dice = document.querySelector(".yellowDice");
+    Dice.addEventListener("click", rollDice);
+    if (document.querySelectorAll(".yellowplayer").length === 0 ){
+        alert ("Yes, you win!")
+
+    }
+}
+function blueAction(e) {
+    for (var j = 0; j < bluei.length; j++) {
+        if (bluei[j].id === e.target.id) {
+            //move out of home to start position
+            if (bluei[j].index === -1) {
+                if (diceNum === 6) {
+                    bluecount6 += 1;
+                    bluei[j].index += 1;
+                    nextposition = bluePath[bluei[j].index];
+                    removePlayer(e.target.id.substring(1), e.target.id);
+                    movePlayer(nextposition, e.target.id, "blueplayer", e.target.id.substring(1), bluePath);
+                    //disable to click the same player multiple times  
+                    document.querySelectorAll(".blueplayer").forEach(player => {
+                        player.removeEventListener("click", blueAction);
+                    });
+                } else {
+                    bluecount6 = 0;
+                }
+            }//not in home
+            else {
+                if (diceNum === 6) {
+                    bluecount6 += 1;
+                } else {
+                    //give chance to next player
+                    const currDice = document.querySelector(".blueDice")
+                    
+                    //to do: resolve index
+                    const nextDice = document.querySelector("." + nextStatus(currDice.className));
+                    currDice.classList.add("hidden");
+                    nextDice.classList.remove("hidden");
+                    bluecount6 = 0;
+                }
+                removePlayer(bluePath[bluei[j].index], e.target.id);
+                bluei[j].index += diceNum;
+                nextposition = bluePath[bluei[j].index];
+                // console.log(nextposition)
+                if (typeof nextposition === 'undefined'){
+                    console.log('yes error!')
+                    var remainStep = bluei[j].index - 56;
+                    console.log(remainStep)
+                    bluei[j].index = 56 - remainStep;
+                    nextposition = bluePath[bluei[j].index];
+                }
+                else if(nextposition === bluePath[56]){
+                    alert("This pawn of yours has reached the finish line.");
+                    removePlayer(e.target.id.substring(1), e.target.id);
+                }
+                movePlayer(nextposition, e.target.id, "blueplayer", bluePath[bluei[j].index - 1], bluePath);
+                document.querySelectorAll(".blueplayer").forEach(player => {
+                    player.removeEventListener("click", blueAction);
+                });
+            }
+            if (bluecount6 >= 3) {
+                //give chance to next player
+                const currDice = document.querySelector(".blueDice")
+                //to do: resolve index
+                const nextDice = document.querySelector("." + nextStatus(currDice.className));
+                currDice.classList.add("hidden");
+                nextDice.classList.remove("hidden");
+                bluecount6 = 0;
+
+            }
+        }
+    }
+    const Dice = document.querySelector(".blueDice");
+    Dice.addEventListener("click", rollDice);
+    if (document.querySelectorAll(".blueplayer").length === 0 ){
+        alert ("Yes, you win!")
+
+    }
+}
 function move(currentDice, randomNumber) {
     if (currentDice.className === "redDice") {
         //check if all players are at home
@@ -378,6 +552,64 @@ function move(currentDice, randomNumber) {
 
         }
     }
+    if (currentDice.className === "yellowDice") {
+        //check if all players are at home
+        var playerAtHome = 0;
+        yellowi.forEach(i => {
+            if (i.index == -1) {
+                playerAtHome += 1;
+            }
+        })
+        if (playerAtHome === yellowi.length && randomNumber !== 6) {
+            let nextDiceName = nextStatus(currentDice.className);
+            //give chance to next player
+            setTimeout(function () {
+                currentDice.classList.add("hidden");
+            }, 1000);
+            var nextDice = document.querySelector("." + nextDiceName);
+            setTimeout(function () {
+                nextDice.classList.remove("hidden");
+            }, 1000);
+            return 0;
+        }
+        const Dice = document.querySelector(".yellowDice");
+        Dice.removeEventListener("click", rollDice);
+        const yellowPlayers = document.querySelectorAll(".yellowplayer");
+        for (var i = 0; i < yellowPlayers.length; i++) {
+            var currentplayer = yellowPlayers[i];
+            currentplayer.addEventListener("click", yellowAction);
+
+        }
+    }
+    if (currentDice.className === "blueDice") {
+        //check if all players are at home
+        var playerAtHome = 0;
+        bluei.forEach(i => {
+            if (i.index == -1) {
+                playerAtHome += 1;
+            }
+        })
+        if (playerAtHome === bluei.length && randomNumber !== 6) {
+            let nextDiceName = nextStatus(currentDice.className);
+            //give chance to next player
+            setTimeout(function () {
+                currentDice.classList.add("hidden");
+            }, 1000);
+            var nextDice = document.querySelector("." + nextDiceName);
+            setTimeout(function () {
+                nextDice.classList.remove("hidden");
+            }, 1000);
+            return 0;
+        }
+        const Dice = document.querySelector(".blueDice");
+        Dice.removeEventListener("click", rollDice);
+        const bluePlayers = document.querySelectorAll(".blueplayer");
+        for (var i = 0; i < bluePlayers.length; i++) {
+            var currentplayer = bluePlayers[i];
+            currentplayer.addEventListener("click", blueAction);
+
+        }
+    }
 
 }
 function nextStatus(name) {
@@ -392,12 +624,13 @@ function nextStatus(name) {
     }
 
 }
-var path = [2, 1, 6, 5, 6, 6, 6, 6, 2];
+var path = [6,1,6,6,6,1,6,6,6,1,6,6,6,1,6,6,4,1,6,6,6,1,6,6,6,1,6,6,6,1,6,6,4,1,6,6,6,1,6,6,6,1,6,6,6,1,6,6,4,1,6,6,6,1,6,6,6,1,6,6,6,1,6,6,4];
 var pos = 0;
 function rollDice(e) {
-    // var randomNumber = Math.floor(Math.random() * 6) + 1; //1-6
+    //var randomNumber = Math.floor(Math.random() * 6) + 1; //1-6
     var randomNumber = path[pos];
     pos += 1;
+    dicesound.play();
     diceNum = randomNumber;
     if (startingDice.value < randomNumber) {
         startingDice.name = e.target.className;
