@@ -1,5 +1,9 @@
-var dicesound= document.getElementById("diceSound");
-var stepsound= document.getElementById("stepSound");
+var dicesound = document.getElementById("diceSound");
+var stepsound = document.getElementById("stepSound");
+var redPlayerName;
+var greenPlayerName;
+var bluePlayerName;
+var yellowPlayerName;
 const gameBoard = document.querySelector(".gameboard");
 const welcomePage = document.querySelector(".welcome");
 const startCells = Array(225).join(".").split(".");
@@ -22,6 +26,7 @@ var greencount6 = 0;
 var yellowcount6 = 0;
 var bluecount6 = 0;
 var blockPath = [];
+var winning = [];
 
 
 function createBoard() {
@@ -89,7 +94,7 @@ function removePlayer(cellId, playerId) {
     cellElement.remove(removePlayer);
 }
 
-function movePlayer(cellId, playerId, className, prevcellId, path) {
+function movePlayer(cellId, playerId, className, prevcellId, path, status) {
     stepsound.play();
     //current cell
     const cellElement = document.getElementById(cellId);
@@ -147,6 +152,12 @@ function movePlayer(cellId, playerId, className, prevcellId, path) {
     if (block) {
         const prevCellElement = document.getElementById(prevcellId);
         prevCellElement.append(newPlayer);
+        //update newPlayer position
+        for (let i = 0; i < status.length; i++) {
+            if (status[i].id === newPlayer.id) {
+                status[i].index = path.indexOf(prevcellId);
+            }
+        }
 
     }
     else {
@@ -221,7 +232,7 @@ function redAction(e) {
                     redi[j].index += 1; //update player's current position
                     nextposition = redPath[redi[j].index];
                     removePlayer(e.target.id.substring(1), e.target.id);
-                    movePlayer(nextposition, e.target.id, "redplayer", e.target.id.substring(1), redPath);
+                    movePlayer(nextposition, e.target.id, "redplayer", e.target.id.substring(1), redPath, redi);
                     //disable to click the same player multiple times  
                     document.querySelectorAll(".redplayer").forEach(player => {
                         player.removeEventListener("click", redAction);
@@ -241,23 +252,25 @@ function redAction(e) {
                     nextDice.classList.remove("hidden");
                     redcount6 = 0;
 
-                }
+                }//send other players home
                 removePlayer(redPath[redi[j].index], e.target.id);
                 redi[j].index += diceNum;
                 nextposition = redPath[redi[j].index];
-                if (typeof nextposition === 'undefined'){
+                if (typeof nextposition === 'undefined') {
                     console.log('yes error!')
                     var remainStep = redi[j].index - 56;
                     console.log(remainStep)
                     redi[j].index = 56 - remainStep;
                     nextposition = redPath[redi[j].index];
                 }
-                else if(nextposition === redPath[56]){
+                movePlayer(nextposition, e.target.id, "redplayer", redPath[redi[j].index - 1], redPath, redi);
+                //reach the end of path
+                if (nextposition === redPath[56]) {
+                    //movePlayer(nextposition, e.target.id, "redplayer", redPath[redi[j].index - 1], redPath, redi);
                     alert("This pawn of yours has reached the finish line.");
+                    removePlayer(redPath[56], e.target.id);
                     redi.splice(j, 1)
-                    removePlayer(e.target.id.substring(1), e.target.id);
                 }
-                movePlayer(nextposition, e.target.id, "redplayer", redPath[redi[j].index - 1], redPath);
                 document.querySelectorAll(".redplayer").forEach(player => {
                     player.removeEventListener("click", redAction);
                 });
@@ -274,8 +287,16 @@ function redAction(e) {
     }
     const Dice = document.querySelector(".redDice");
     Dice.addEventListener("click", rollDice);
-    if (document.querySelectorAll(".redplayer").length === 0 ){
-        alert ("Yes, you win!")
+    //check winning conditions
+    if (document.querySelectorAll(".redplayer").length === 3) {
+        // alert("Yes, you win!")
+        winning.push(redPlayerName);
+        for (let i = 0; i < currentStatus.length; i++) {
+            if (currentStatus[i].name === "redDice") {
+                currentStatus.splice(i, 1);
+            }
+        }
+        document.querySelector(".winning").innerHTML += `<ul>${redPlayerName.value}</ul>`;
 
     }
 }
@@ -290,7 +311,7 @@ function greenAction(e) {
                     greeni[j].index += 1;
                     nextposition = greenPath[greeni[j].index];
                     removePlayer(e.target.id.substring(1), e.target.id);
-                    movePlayer(nextposition, e.target.id, "greenplayer", e.target.id.substring(1), greenPath);
+                    movePlayer(nextposition, e.target.id, "greenplayer", e.target.id.substring(1), greenPath, greeni);
                     //disable to click the same player multiple times  
                     document.querySelectorAll(".greenplayer").forEach(player => {
                         player.removeEventListener("click", greenAction);
@@ -314,18 +335,18 @@ function greenAction(e) {
                 removePlayer(greenPath[greeni[j].index], e.target.id);
                 greeni[j].index += diceNum;
                 nextposition = greenPath[greeni[j].index];
-                if (typeof nextposition === 'undefined'){
+                if (typeof nextposition === 'undefined') {
                     console.log('yes error!')
                     var remainStep = greeni[j].index - 56;
                     console.log(remainStep)
                     greeni[j].index = 56 - remainStep;
                     nextposition = greenPath[greeni[j].index];
                 }
-                else if(nextposition === greenPath[56]){
+                else if (nextposition === greenPath[56]) {
                     alert("This pawn of yours has reached the finish line.");
                     removePlayer(e.target.id.substring(1), e.target.id);
                 }
-                movePlayer(nextposition, e.target.id, "greenplayer", greenPath[greeni[j].index - 1], greenPath);
+                movePlayer(nextposition, e.target.id, "greenplayer", greenPath[greeni[j].index - 1], greenPath, greeni);
                 document.querySelectorAll(".greenplayer").forEach(player => {
                     player.removeEventListener("click", greenAction);
                 });
@@ -344,8 +365,8 @@ function greenAction(e) {
     }
     const Dice = document.querySelector(".greenDice");
     Dice.addEventListener("click", rollDice);
-    if (document.querySelectorAll(".greenplayer").length === 0 ){
-        alert ("Yes, you win!")
+    if (document.querySelectorAll(".greenplayer").length === 0) {
+        alert("Yes, you win!")
 
     }
 }
@@ -360,7 +381,7 @@ function yellowAction(e) {
                     yellowi[j].index += 1;
                     nextposition = yellowPath[yellowi[j].index];
                     removePlayer(e.target.id.substring(1), e.target.id);
-                    movePlayer(nextposition, e.target.id, "yellowplayer", e.target.id.substring(1), yellowPath);
+                    movePlayer(nextposition, e.target.id, "yellowplayer", e.target.id.substring(1), yellowPath, yellowi);
                     //disable to click the same player multiple times  
                     document.querySelectorAll(".yellowplayer").forEach(player => {
                         player.removeEventListener("click", yellowAction);
@@ -384,7 +405,7 @@ function yellowAction(e) {
                 removePlayer(yellowPath[yellowi[j].index], e.target.id);
                 yellowi[j].index += diceNum;
                 nextposition = yellowPath[yellowi[j].index];
-                if (typeof nextposition === 'undefined'){
+                if (typeof nextposition === 'undefined') {
                     console.log('yes error!')
                     var remainStep = yellowi[j].index - 56;
                     console.log(remainStep)
@@ -393,11 +414,11 @@ function yellowAction(e) {
                     nextposition = yellowPath[yellowi[j].index];
                     console.log(nextposition)
                 }
-                else if(nextposition === yellowPath[56]){
+                else if (nextposition === yellowPath[56]) {
                     alert("This pawn of yours has reached the finish line.");
                     removePlayer(e.target.id.substring(1), e.target.id);
                 }
-                movePlayer(nextposition, e.target.id, "yellowplayer", yellowPath[yellowi[j].index - 1], yellowPath);
+                movePlayer(nextposition, e.target.id, "yellowplayer", yellowPath[yellowi[j].index - 1], yellowPath, yellowi);
                 document.querySelectorAll(".yellowplayer").forEach(player => {
                     player.removeEventListener("click", yellowAction);
                 });
@@ -416,11 +437,12 @@ function yellowAction(e) {
     }
     const Dice = document.querySelector(".yellowDice");
     Dice.addEventListener("click", rollDice);
-    if (document.querySelectorAll(".yellowplayer").length === 0 ){
-        alert ("Yes, you win!")
+    if (document.querySelectorAll(".yellowplayer").length === 0) {
+        alert("Yes, you win!")
 
     }
 }
+
 function blueAction(e) {
     for (var j = 0; j < bluei.length; j++) {
         if (bluei[j].id === e.target.id) {
@@ -431,7 +453,7 @@ function blueAction(e) {
                     bluei[j].index += 1;
                     nextposition = bluePath[bluei[j].index];
                     removePlayer(e.target.id.substring(1), e.target.id);
-                    movePlayer(nextposition, e.target.id, "blueplayer", e.target.id.substring(1), bluePath);
+                    movePlayer(nextposition, e.target.id, "blueplayer", e.target.id.substring(1), bluePath, bluei);
                     //disable to click the same player multiple times  
                     document.querySelectorAll(".blueplayer").forEach(player => {
                         player.removeEventListener("click", blueAction);
@@ -446,7 +468,7 @@ function blueAction(e) {
                 } else {
                     //give chance to next player
                     const currDice = document.querySelector(".blueDice")
-                    
+
                     //to do: resolve index
                     const nextDice = document.querySelector("." + nextStatus(currDice.className));
                     currDice.classList.add("hidden");
@@ -457,18 +479,18 @@ function blueAction(e) {
                 bluei[j].index += diceNum;
                 nextposition = bluePath[bluei[j].index];
                 // console.log(nextposition)
-                if (typeof nextposition === 'undefined'){
+                if (typeof nextposition === 'undefined') {
                     console.log('yes error!')
                     var remainStep = bluei[j].index - 56;
                     console.log(remainStep)
                     bluei[j].index = 56 - remainStep;
                     nextposition = bluePath[bluei[j].index];
                 }
-                else if(nextposition === bluePath[56]){
+                else if (nextposition === bluePath[56]) {
                     alert("This pawn of yours has reached the finish line.");
                     removePlayer(e.target.id.substring(1), e.target.id);
                 }
-                movePlayer(nextposition, e.target.id, "blueplayer", bluePath[bluei[j].index - 1], bluePath);
+                movePlayer(nextposition, e.target.id, "blueplayer", bluePath[bluei[j].index - 1], bluePath, bluei);
                 document.querySelectorAll(".blueplayer").forEach(player => {
                     player.removeEventListener("click", blueAction);
                 });
@@ -487,8 +509,8 @@ function blueAction(e) {
     }
     const Dice = document.querySelector(".blueDice");
     Dice.addEventListener("click", rollDice);
-    if (document.querySelectorAll(".blueplayer").length === 0 ){
-        alert ("Yes, you win!")
+    if (document.querySelectorAll(".blueplayer").length === 0) {
+        alert("Yes, you win!")
 
     }
 }
@@ -624,7 +646,7 @@ function nextStatus(name) {
     }
 
 }
-var path = [6,1,6,6,6,1,6,6,6,1,6,6,6,1,6,6,4,1,6,6,6,1,6,6,6,1,6,6,6,1,6,6,4,1,6,6,6,1,6,6,6,1,6,6,6,1,6,6,4,1,6,6,6,1,6,6,6,1,6,6,6,1,6,6,4];
+var path = [6, 1, 6, 6, 6, 1, 6, 6, 6, 1, 6, 6, 6, 1, 6, 6, 4, 1, 6, 6, 6, 1, 6, 6, 6, 1, 6, 6, 6, 1, 6, 6, 4, 1, 6, 6, 6, 1, 6, 6, 6, 1, 6, 6, 6, 1, 6, 6, 4, 1, 6, 6, 6, 1, 6, 6, 6, 1, 6, 6, 6, 1, 6, 6, 4];
 var pos = 0;
 function rollDice(e) {
     //var randomNumber = Math.floor(Math.random() * 6) + 1; //1-6
@@ -716,23 +738,23 @@ function rollDice(e) {
 }
 
 function removeWelcome() {
-    var redPlayer = document.querySelector('.redPlayer');
-    var greenPlayer = document.querySelector('.greenPlayer');
-    var yellowPlayer = document.querySelector('.yellowPlayer');
-    var bluePlayer = document.querySelector('.bluePlayer');
+    redPlayerName = document.querySelector('.redPlayer');
+    greenPlayerName = document.querySelector('.greenPlayer');
+    yellowPlayerName = document.querySelector('.yellowPlayer');
+    bluePlayerName = document.querySelector('.bluePlayer');
     var count = [0, 0, 0, 0];
     var is_hidden = false;
-    if (redPlayer.value !== "") {
+    if (redPlayerName.value !== "") {
         count[0] += 1;
     }
-    if (greenPlayer.value !== "") {
+    if (greenPlayerName.value !== "") {
         count[1] += 1;
     }
-    if (yellowPlayer.value !== "") {
+    if (yellowPlayerName.value !== "") {
         count[2] += 1;
     }
 
-    if (bluePlayer.value !== "") {
+    if (bluePlayerName.value !== "") {
         count[3] += 1;
     }
 
@@ -747,7 +769,7 @@ function removeWelcome() {
             var dice = document.createElement("img");
             dice.src = "images/dice6.png";
             dice.className = "redDice";
-            name.textContent = redPlayer.value;
+            name.textContent = redPlayerName.value;
             name.classList.add("redName");
             gameBoard.appendChild(name);
             gameBoard.appendChild(dice);
@@ -759,11 +781,11 @@ function removeWelcome() {
         if (count[1]) {
             addPlayer([41, 42, 56, 57], "green");
             var name = document.createElement("p");
-            name.classList.add("greenName");
             var dice = document.createElement("img");
             dice.src = "images/dice6.png";
             dice.className = "greenDice";
-            name.textContent = greenPlayer.value;
+            name.textContent = greenPlayerName.value;
+            name.classList.add("greenName");
             gameBoard.appendChild(name);
             gameBoard.appendChild(dice);
             if (is_hidden) {
@@ -781,7 +803,7 @@ function removeWelcome() {
             var dice = document.createElement("img");
             dice.src = "images/dice6.png";
             dice.className = "yellowDice";
-            name.textContent = yellowPlayer.value;
+            name.textContent = yellowPlayerName.value;
             gameBoard.appendChild(name);
             gameBoard.appendChild(dice);
             if (is_hidden) {
@@ -799,7 +821,7 @@ function removeWelcome() {
             var dice = document.createElement("img");
             dice.src = "images/dice6.png";
             dice.className = "blueDice";
-            name.textContent = bluePlayer.value;
+            name.textContent = bluePlayerName.value;
             gameBoard.appendChild(name);
             gameBoard.appendChild(dice);
             if (is_hidden) {
