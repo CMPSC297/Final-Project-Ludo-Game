@@ -205,3 +205,23 @@ img {
 .hidden {
     display: none;
 }
+
+.topLeft{
+    border-left: 33px solid #FCC8D1;
+    border-top: 33px solid #C7E9B0;
+}
+
+.topRight{
+    border-top: 33px solid #C7E9B0;
+    border-right: 33px solid #FEFF86;
+}
+
+.bottomLeft{
+    border-left: 33px solid #FCC8D1;
+    border-bottom: 33px solid #C0DBEA;
+}
+
+.bottomRight{
+    border-right: 33px solid #FEFF86;
+    border-bottom: 33px solid #C0DBEA;
+}

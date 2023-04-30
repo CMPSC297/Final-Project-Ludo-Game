@@ -35,6 +35,8 @@ function createBoard() {
         cellElement.classList.add("square");
         cellElement.id = index;
         gameBoard.append(cellElement);
+        
+        
     })
 }
 
@@ -852,3 +854,11 @@ addSafeSquare([122, 36, 102, 188]);
 
 // start game
 
+var a = document.getElementById(96);
+var b = document.getElementById(98);
+var c = document.getElementById(126);
+var d = document.getElementById(128);
+a.classList.add("topLeft");
+b.classList.add("topRight");
+c.classList.add("bottomLeft");
+d.classList.add("bottomRight");
