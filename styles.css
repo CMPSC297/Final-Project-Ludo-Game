@@ -242,8 +242,6 @@ img {
 }
 
 .bottomLeft {
-    /* border-left: 30px solid #FCC8D1;
-    border-bottom: 30px solid #C0DBEA; */
     width: 6.66%;
     height: 6.66%;
     background: linear-gradient(135deg, #FCC8D1 50%, #C0DBEA 50%);
@@ -255,8 +253,6 @@ img {
 }
 
 .bottomRight {
-    /* border-right: 30px solid #FEFF86;
-    border-bottom: 30px solid #C0DBEA; */
     width: 6.66%;
     height: 6.66%;
     background: linear-gradient(225deg, #FEFF86 50%, #C0DBEA 50%);
