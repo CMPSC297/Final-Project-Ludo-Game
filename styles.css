@@ -86,6 +86,7 @@ body {
     border: solid 2px transparent;
     box-sizing: border-box;
     background-color: #D21312;
+    position: relative;
 }
 
 .greenplayer {
@@ -95,6 +96,7 @@ body {
     border: solid 2px transparent;
     box-sizing: border-box;
     background-color: #98D8AA;
+    position: relative;
 }
 
 .yellowplayer {

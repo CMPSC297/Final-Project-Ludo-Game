@@ -168,18 +168,14 @@ function movePlayer(cellId, playerId, className, prevcellId, path, status) {
     else {
         //if cell is safe
         if ([122, 36, 102, 188].includes(cellId)) {
-            console.log("enter safe zone");
             cellElement.append(newPlayer);
-            var add = false;
-            oppsiteCount.forEach(oldPlayer => {
-                //cell element has a block
-                if (oldPlayer >= 2) {
-                    add = true;
+            players.forEach(player => {
+                if (player.className === newPlayer.className) {
+                    if (blockPath.indexOf(cellId) === -1) blockPath.push(cellId);
                 }
-                if (add) {
-                    blockPath.push(cellId);
-                }
-            });
+            }
+
+            )
         }
         else {
             if (players.length === 0) {
