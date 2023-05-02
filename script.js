@@ -35,8 +35,8 @@ function createBoard() {
         cellElement.classList.add("square");
         cellElement.id = index;
         gameBoard.append(cellElement);
-        
-        
+
+
     })
 }
 
@@ -170,6 +170,16 @@ function movePlayer(cellId, playerId, className, prevcellId, path, status) {
         if ([122, 36, 102, 188].includes(cellId)) {
             console.log("enter safe zone");
             cellElement.append(newPlayer);
+            var add = false;
+            oppsiteCount.forEach(oldPlayer => {
+                //cell element has a block
+                if (oldPlayer >= 2) {
+                    add = true;
+                }
+                if (add) {
+                    blockPath.push(cellId);
+                }
+            });
         }
         else {
             if (players.length === 0) {
@@ -678,7 +688,8 @@ function nextStatus(name) {
     }
 
 }
-var path = [1, 6, 6, 6, 6, 1, 6, 6, 6, 1, 6, 6, 6, 1, 6, 6, 4, 1, 6, 6, 6, 1, 6, 6, 6, 1, 6, 6, 6, 1, 6, 6, 4, 1, 6, 6, 6, 1, 6, 6, 6, 1, 6, 6, 6, 1, 6, 6, 4, 1, 6, 6, 6, 1, 6, 6, 6, 1, 6, 6, 6, 1, 6, 6, 4];
+var path = [6, 1, 6, 6, 6, 6, 6, 2, 6, 3, 6, 6, 2, 6, 6, 6, 6, 1, 6, 6, 6]
+// var path = [1, 6, 6, 6, 6, 1, 6, 6, 6, 1, 6, 6, 6, 1, 6, 6, 4, 1, 6, 6, 6, 1, 6, 6, 6, 1, 6, 6, 6, 1, 6, 6, 4, 1, 6, 6, 6, 1, 6, 6, 6, 1, 6, 6, 6, 1, 6, 6, 4, 1, 6, 6, 6, 1, 6, 6, 6, 1, 6, 6, 6, 1, 6, 6, 4];
 //var path = [6, 1, 6, 6, 6, 1, 5, 6, 6, 2, 4]; // safe zone demo
 var pos = 0;
 function rollDice(e) {
